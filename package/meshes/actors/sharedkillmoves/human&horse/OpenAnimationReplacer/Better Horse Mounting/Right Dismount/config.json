@@ -1,0 +1,23 @@
+{
+  "name": "Right Dismount",
+  "description": "Right-side dismounting selected by camera direction.",
+  "priority": 2000031,
+  "interruptible": false,
+  "replaceOnLoop": false,
+  "replaceOnEcho": false,
+  "conditions": [
+    {
+      "condition": "BetterHorseMounting_DismountRight",
+      "requiredPlugin": "Better Horse Mounting",
+      "requiredVersion": "1.0.0.0"
+    }
+  ],
+  "pairedConditions": [
+    {
+      "condition": "BetterHorseMounting_DismountRight",
+      "requiredPlugin": "Better Horse Mounting",
+      "requiredVersion": "1.0.0.0"
+    }
+  ],
+  "triggersFromAnnotationsOnly": true
+}

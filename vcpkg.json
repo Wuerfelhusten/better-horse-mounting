@@ -1,7 +1,7 @@
 {
-  "name": "example",
+  "name": "better-horse-mounting",
   "version-string": "1.0.0",
-  "description": "Example CLib NG project",
+  "description": "Better Horse Mounting: approach-side mounting and camera-directed dismounting",
   "dependencies": [
     "commonlibsse-ng"
   ],

@@ -1,41 +1,52 @@
-﻿
-#define DLLEXPORT __declspec(dllexport)
+#include "Hooks.h"
+#include "MountSide.h"
+#include "Runtime.h"
 
-SKSE_PLUGIN_VERSION = []()
-	{
-		SKSE::PluginVersionData v;
-		v.PluginName(Plugin::NAME);
-		v.PluginVersion(Plugin::VERSION);
-		v.AuthorName("SkyHorizon"sv);
-		v.UsesAddressLibrary();
-		v.UsesNoStructs();
-		return v;
-	}
-();
-
-SKSE_PLUGIN_QUERY(const SKSE::QueryInterface*, SKSE::PluginInfo* pluginInfo)
+namespace
 {
-	pluginInfo->name = SKSEPlugin_Version.pluginName;
-	pluginInfo->infoVersion = SKSE::PluginInfo::kVersion;
-	pluginInfo->version = SKSEPlugin_Version.pluginVersion;
-	return true;
+	void MessageHandler(SKSE::MessagingInterface::Message* a_message)
+	{
+		if (!a_message) {
+			return;
+		}
+		switch (a_message->type) {
+		case SKSE::MessagingInterface::kPostLoad:
+			if (MountSide::RegisterConditions()) {
+				Hooks::Install();
+			}
+			break;
+		case SKSE::MessagingInterface::kPreLoadGame:
+		case SKSE::MessagingInterface::kNewGame:
+			MountSide::Reset();
+			break;
+		default:
+			break;
+		}
+	}
 }
 
-SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* skse)
+// CommonLib supplies both pre/post-629 layouts and Address Library formats 1/2/5.
+SKSEPluginInfo(
+		.Version = Plugin::VERSION,
+	.Name = Plugin::NAME,
+	.Author = "Wuerfel",
+	.StructCompatibility = SKSE::StructCompatibility::Independent,
+	.RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary);
+
+SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* a_skse)
 {
-	SKSE::Init(skse, true);
-
-	spdlog::set_pattern("[%H:%M:%S:%e] [%l] %v"s);
-
-#ifndef NDEBUG
-	spdlog::set_level(spdlog::level::trace);
-	spdlog::flush_on(spdlog::level::trace);
-#else
+	if (!a_skse || a_skse->IsEditor() || !Runtime::IsSupported(a_skse->RuntimeVersion())) {
+		return false;
+	}
+	SKSE::Init(a_skse, true);
+	spdlog::set_pattern("[%H:%M:%S:%e] [%l] %v");
 	spdlog::set_level(spdlog::level::info);
 	spdlog::flush_on(spdlog::level::info);
-#endif
-
-	SKSE::log::info("Game version: {}", skse->RuntimeVersion());
-
+	logger::info("{} {} FLATRIM on runtime {}", Plugin::NAME, Plugin::VERSION.string(), a_skse->RuntimeVersion().string());
+	const auto messaging = SKSE::GetMessagingInterface();
+	if (!messaging || !messaging->RegisterListener(MessageHandler)) {
+		logger::critical("Unable to register SKSE message listener");
+		return false;
+	}
 	return true;
 }

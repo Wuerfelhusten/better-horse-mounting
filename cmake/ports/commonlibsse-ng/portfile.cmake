@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO alandtse/CommonLibVR
-    REF 723cfda480ae966ee39ab6fb17c4fe7dd0fa4973
-    SHA512 8fd9fc5bab3239503ad7280da9dfd32e2ca80b6f75ff765bca04b8f5268734cd91fbbbf6c5f3848fc1d84e7b3529023d46bd713650777f4eb985adb6fcf197a1
+    REF 896f6d02e465576b6d044b36fd441835aa9c8bf6
+    SHA512 d89e60b7bb90afe39a4c9bae43f9fd92288d245dff0ef142ac578250698fa7d102b3aa8d7dfc27c2073d87158073d2b99af318b450806be935c032f98b262c2a
     HEAD_REF ng
 )
 
@@ -20,7 +20,10 @@ vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
     OPTIONS
         -DBUILD_TESTS=OFF 
-        -DSKSE_SUPPORT_XBYAK=ON
+        -DSKSE_SUPPORT_XBYAK=OFF
+        -DENABLE_SKYRIM_SE=ON
+        -DENABLE_SKYRIM_AE=ON
+        -DENABLE_SKYRIM_VR=OFF
         -DSKSE_SUPPORT_PATCH_SAFETY=OFF
 )
 
@@ -37,4 +40,4 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
 if(EXISTS "${SOURCE_PATH}/COPYING.txt") # COPYING.txt = new LICENSE
     vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/COPYING.txt")
-endif() 
+endif()

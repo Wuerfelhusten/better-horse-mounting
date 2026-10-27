@@ -17,18 +17,19 @@ target_sources("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/cmake/Plugi
 
 # Precompile headers
 target_precompile_headers("${PROJECT_NAME}" PRIVATE include/PCH.h)
+# Keep the copied OAR API independent of this plugin's precompiled header.
+set_source_files_properties(
+    src/API/OpenAnimationReplacer-ConditionTypes.cpp
+    src/API/OpenAnimationReplacerAPI-Conditions.cpp
+    PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+)
 
 # Enable interprocedural optimization
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
+set_property(TARGET "${PROJECT_NAME}" PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 
 # Set Boost options
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME OFF CACHE BOOL "")
-
-#pdb
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 
 # MSVC-specific settings
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
@@ -44,7 +45,7 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
     target_compile_options("${PROJECT_NAME}" PRIVATE
         	/sdl             # Enable Additional Security Checks
 			/utf-8           # Set Source and Executable character sets to UTF-8
-			/Zi              # Debug Information Format
+			"$<$<CONFIG:DEBUG>:/Zi>"
 
 			/permissive-     # Standards conformance
 			/Zc:preprocessor # Enable preprocessor conformance mode
@@ -57,7 +58,7 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
      
     target_link_options("${PROJECT_NAME}" PRIVATE
         "$<$<CONFIG:DEBUG>:/INCREMENTAL;/OPT:NOREF;/OPT:NOICF>"
-        "$<$<CONFIG:RELEASE>:/LTCG;/INCREMENTAL:NO;/OPT:REF;/OPT:ICF;/DEBUG:FULL>"
+        "$<$<CONFIG:RELEASE>:/INCREMENTAL:NO;/OPT:REF;/OPT:ICF>"
     )
 endif()
 

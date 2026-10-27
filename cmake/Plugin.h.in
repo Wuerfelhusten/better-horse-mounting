@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SKSE/SKSE.h"
 #include <string_view>
 
 namespace Plugin
@@ -15,5 +16,5 @@ namespace Plugin
 		// clang-format on
 	};
 
-	inline constexpr auto NAME = "@PROJECT_NAME@"sv;
+	inline constexpr auto NAME = "@PLUGIN_DISPLAY_NAME@"sv;
 }
